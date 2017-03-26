@@ -9,6 +9,7 @@ irq_gpio_pin = None
 radio = RF24(22, 0);
 
 ROBOT_NOP       = 0x00
+RADIO_SORBET	= 0x80
 
 SIMON_SAYS      = 0x10
 UNSIMON_SAYS    = 0x20
@@ -44,16 +45,34 @@ greenBot = Robot()
 pinkBot = Robot()
 
 redBot.address = bytearray([0xCA, 0xCA, 0xCA, 0xCA, 0x01])
-blueBot.address = bytearray([0xCA, 0xCA, 0xCA, 0xCA, 0x02])
-greenBot.address = bytearray([0xCA, 0xCA, 0xCA, 0xCA, 0x03])
+redBot.name = "Red Robot"
+greenBot.address = bytearray([0xCA, 0xCA, 0xCA, 0xCA, 0x02])
+greenBot.name = "Green Robot"
+blueBot.address = bytearray([0xCA, 0xCA, 0xCA, 0xCA, 0x03])
+blueBot.name = "Blue Robot"
 pinkBot.address = bytearray([0xCA, 0xCA, 0xCA, 0xCA, 0x04])
+pinkBot.name = "Pink Robot"
+
+wrongBots = []
 
 gameBots = [redBot, blueBot, greenBot, pinkBot]
+
+def send(bot, packet):
+	ack=0
+	radio.stopListening()
+	radio.openWritingPipe(bot.address)
+	if(radio.available()):
+		ack = ord(radio.read(1))
+	radio.write(bytearray([RADIO_SORBET]))
+        if(radio.available()):
+		radio.read(1)	
+	return ack
 
 
 def sendGameInstruction(simon, instruction):
 
-	
+	wrongBots = []	
+
 	if simon:
 		instruction = instruction | SIMON_SAYS
 	else:
@@ -64,8 +83,9 @@ def sendGameInstruction(simon, instruction):
     	for bot in gameBots:
 
         	if bot.inPlay:
-            		radio.openWritingPipe(bot.address)
-            		radio.write(packet)
+			bot.busy = True
+			bot.wrong = False
+			send(bot, packet)
 
 
 def sendCommand(command):
@@ -75,8 +95,79 @@ def sendCommand(command):
     	for bot in gameBots:
 
         	if bot.inPlay:
-            		radio.openWritingPipe(bot.address)
-            		radio.write(packet)
+			send(bot, packet)
+
+def pollRobots():
+	
+	poll = bytearray([ROBOT_NOP])
+	finished = True
+
+	for bot in gameBots:
+	
+		if bot.inPlay and bot.busy:
+			response = send(bot, poll)
+			print response
+
+			if response == I_AM_IDLE:
+				bot.busy = False
+			if response == I_AM_WRONG:
+				bot.busy = False
+				bot.wrong = True
+			if response == I_AM_BUSY:
+				finished = False
+
+	return finished
+
+def areAllOut():
+	return (len(wrongBots) == countRobotsInPlay())
+
+
+def getListWrong():
+	wrongList = []
+	for bot in gameBots:
+		if bot.inPlay and bot.wrong:
+			wrongList.append(bot.name)
+
+	return wrongList
+
+
+def doWeHaveAWinner():
+    return (countRobotsInPlay() == 1)
+
+def getWinner():
+	for bot in gameBots:
+		if bot.inPlay:
+			return bot.name
+
+
+def putRobotsOut():
+	
+	for bot in gameBots:
+		if bot.inPlay and bot.wrong :
+			bot.inPlay = False
+			send(bot, bytearray([MUST | THIS_BOT_OUT]))
+		elif bot.inPlay and not bot.wrong :
+			bot.busy = True
+			send(bot, bytearray([MUST | OTHER_BOT_OUT]))
+			
+
+def giveAnotherChance():
+
+	for bot in gameBots:
+		if bot.inPlay:
+			send(bot, bytearray([MUST | GO_IDLE]))
+
+
+ 
+def robotHasWon():
+
+	for bot in gameBots:
+		if bot.inPlay:
+			send(bot, bytearray([MUST | BOT_WINS]))
+			bot.busy = True
+
+
+
 
 def setUpLink():
 
@@ -85,6 +176,8 @@ def setUpLink():
 	radio.enableAckPayload()
 	radio.enableDynamicPayloads()
 	radio.setRetries(5,15)
+	while(radio.available()):
+		radio.read(1)
 	radio.stopListening()
 
 
@@ -92,6 +185,8 @@ def startGame():
 
     	for bot in gameBots:
         	bot.inPlay = True
+		bot.busy = False
+		bot.wrong = False
 
     	sendCommand(GO_IDLE)
 
