@@ -58,9 +58,10 @@ wrongBots = []
 gameBots = [redBot, blueBot, greenBot, pinkBot]
 
 def send(bot, packet):
-    ack=0
+    ack = 0
     radio.stopListening()
     radio.openWritingPipe(bot.address)
+    radio.write(packet)
     if(radio.available()):
         ack = ord(radio.read(1))
     radio.write(bytearray([RADIO_SORBET]))
@@ -117,7 +118,6 @@ def pollRobots():
 
         if bot.inPlay and bot.busy:
             response = send(bot, poll)
-            print response
 
             if response == I_AM_IDLE:
                 bot.busy = False
@@ -194,7 +194,8 @@ def setUpLink():
 def startGame():
 
     for bot in gameBots:
-        bot.inPlay = isRobotPresent(bot)
+        #bot.inPlay = isRobotPresent(bot)
+        bot.inPlay = True
         bot.busy = False
         bot.wrong = False
 

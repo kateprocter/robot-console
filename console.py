@@ -155,7 +155,8 @@ def ackOut():
 def ackNotOut():
     radiolink.giveAnotherChance()
     ackNotOutButton.config(state="disabled")
-    game.after(pollInterval, pollRobots)
+    gameMessage.config(text = "Let's Play")
+    enableButtons();
 
 def ackWin():
     radiolink.robotHasWon()
@@ -193,12 +194,10 @@ def handleEndRound():
         return
 
     if radiolink.areAllOut():
-        print "ALL OUT"
         haveAnotherGo()
         return
 
     outList = radiolink.getListWrong()
-    print outList
 
     if len(outList) > 0:
         robotsOut(outList)
