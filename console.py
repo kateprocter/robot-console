@@ -9,7 +9,7 @@ blueButton = "#42c2f4"
 greenButton="#48f442"
 
 buttonWidth = 10
-buttonHeight = 2
+buttonHeight = 3
 
 pollInterval = 250
 
@@ -154,7 +154,7 @@ def ackOut():
 
 def ackNotOut():
     radiolink.giveAnotherChance()
-    ackNotOutButton.config(state="disabled")
+    ackNotOutButton.grid_remove()
     gameMessage.config(text = "Let's Play")
     enableButtons();
 
@@ -388,25 +388,25 @@ gameMessage.config(font = ("Arial", 20))
 
 play.grid()
 
-simonSpinButton.grid(row=0, column=0, padx=5, pady=10)
-simonForwardButton.grid(row=0, column=1, padx=5, pady=10)
-simonBackwardButton.grid(row=1, column=0, padx=5, pady=10)
-simonBlinkButton.grid(row=1, column=1, padx=5, pady=10)
-simonCrossEyesButton.grid(row=2, column=0, padx=5, pady=10)
-simonFlashButton.grid(row=2, column=1, padx=5, pady=10)
-simonRainbowButton.grid(row=3, column=0, padx=5, pady=10)
-simonSleepButton.grid(row=3, column=1, padx=5, pady=10)
+simonSpinButton.grid(row=0, column=0, padx=5, pady=12)
+simonForwardButton.grid(row=0, column=1, padx=5, pady=12)
+simonBackwardButton.grid(row=1, column=0, padx=5, pady=12)
+simonBlinkButton.grid(row=1, column=1, padx=5, pady=12)
+simonCrossEyesButton.grid(row=2, column=0, padx=5, pady=12)
+simonFlashButton.grid(row=2, column=1, padx=5, pady=12)
+simonRainbowButton.grid(row=3, column=0, padx=5, pady=12)
+simonSleepButton.grid(row=3, column=1, padx=5, pady=12)
 
-spinButton.grid(row=0, column=3, padx=5, pady=10)
-forwardButton.grid(row=0, column=4, padx=5, pady=10)
-backwardButton.grid(row=1, column=3, padx=5, pady=10)
-blinkButton.grid(row=1, column=4, padx=5, pady=10)
-crossEyesButton.grid(row=2, column=3, padx=5, pady=10)
-flashButton.grid(row=2, column=4, padx=5, pady=10)
-rainbowButton.grid(row=3, column=3, padx=5, pady=10)
-sleepButton.grid(row=3, column=4, padx=5, pady=10)
+spinButton.grid(row=0, column=3, padx=5, pady=12)
+forwardButton.grid(row=0, column=4, padx=5, pady=12)
+backwardButton.grid(row=1, column=3, padx=5, pady=12)
+blinkButton.grid(row=1, column=4, padx=5, pady=12)
+crossEyesButton.grid(row=2, column=3, padx=5, pady=12)
+flashButton.grid(row=2, column=4, padx=5, pady=12)
+rainbowButton.grid(row=3, column=3, padx=5, pady=12)
+sleepButton.grid(row=3, column=4, padx=5, pady=12)
 
-gameMessage.grid(row=0, rowspan=3, column=2, padx=5, pady=10)
+gameMessage.grid(row=0, rowspan=3, column=2, padx=5, pady=12)
 
 radiolink.setUpLink()
 radiolink.startGame()

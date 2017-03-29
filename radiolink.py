@@ -131,7 +131,7 @@ def pollRobots():
 
 
 def areAllOut():
-    return (len(wrongBots) == countRobotsInPlay())
+    return countRobotsInPlay() == countWrongRobots()
 
 
 def getListWrong():
@@ -194,14 +194,15 @@ def setUpLink():
 def startGame():
 
     for bot in gameBots:
-        #bot.inPlay = isRobotPresent(bot)
-        bot.inPlay = True
+        bot.inPlay = isRobotPresent(bot)
         bot.busy = False
         bot.wrong = False
 
     sendCommand(GO_IDLE)
 
 
-def countRobotsInPlay():
+def countWrongRobots():
+    return len([b for b in gameBots if (b.inPlay and b.wrong)])
 
+def countRobotsInPlay():
     return len([b for b in gameBots if b.inPlay])
