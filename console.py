@@ -126,7 +126,7 @@ def blink():
 def crossEyes():
     gameMessage.configure(text="Cross Eyes")
     disableButtons()
-    radiolink.sendGameInstruction(False, radiolink.SIMON_SPIN)
+    radiolink.sendGameInstruction(False, radiolink.SIMON_CROSS_EYE)
     game.after(pollInterval, pollRobots)
 
 def flash():
