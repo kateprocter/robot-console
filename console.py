@@ -169,6 +169,7 @@ def newGame():
     winner = False
     newGameButton.grid_remove()
     ackWinButton.grid_remove()
+    ackOutButton.grid_remove()
     enableButtons()
     gameMessage.config(text = "Let's Play")
 
